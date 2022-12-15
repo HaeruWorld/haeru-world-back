@@ -3,6 +3,7 @@ package com.haeru.haeruworldback.domain.haeruplace.service;
 import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaceDetail;
 import com.haeru.haeruworldback.domain.haeruplace.dto.Location;
 import com.haeru.haeruworldback.domain.haeruplace.dto.MarineCollections;
+import com.haeru.haeruworldback.domain.haeruplace.entity.Area;
 import com.haeru.haeruworldback.domain.haeruplace.entity.HaeruPlace;
 import com.haeru.haeruworldback.domain.haeruplace.entity.MarineCollection;
 import com.haeru.haeruworldback.domain.haeruplace.exception.HaeruPlaceNotFoundException;
@@ -72,28 +73,31 @@ public class HaeruPlaceDetailService {
             haeruPlaceDetail.setEndTime(resultTime.get(1));
         }
 
+        String areaName = extractedArea(findHaeruPlace.getArea());
+        haeruPlaceDetail.setArea(areaName);
+
         return haeruPlaceDetail;
+    }
+
+    // Area에서 String으로 지역추출
+    private String extractedArea(Area area) {
+        switch (area) {
+            case JEJU:
+                return "제주";
+            case AEWOL:
+                return "애월";
+            case SEOGWIPO:
+                return "서귀포";
+            default:
+                return "성산";
+        }
     }
 
 
     public List<String> getSeaTime(String area) {
 
-        // 저조시간 관측 지역코드
-        String areaCode = "DT_0010";
-        switch (area) {
-            case "JEJU":
-                areaCode = "DT_0004";
-                break;
-            case "AEWOL":
-                areaCode = "DT_0047";
-                break;
-            case "SEONGSAN":
-                areaCode = "DT_0022";
-                break;
-            case "default":
-                areaCode = "DT_0010";
-                break;
-        }
+        // 저조시간 관측 지역코드 추출
+        String areaCode = getAreaCode(area);
 
         LocalDateTime localDateTime = LocalDateTime.now();
         String date = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -158,6 +162,19 @@ public class HaeruPlaceDetailService {
         }
 
         return resultTimeList;
+    }
+
+    private String getAreaCode(String area) {
+        switch (area) {
+            case "JEJU":
+                return "DT_0004";
+            case "AEWOL":
+                return  "DT_0047";
+            case "SEONGSAN":
+                return  "DT_0022";
+            default:
+                return  "DT_0010";
+        }
     }
 
     // 하루 저조 시간 구하기
