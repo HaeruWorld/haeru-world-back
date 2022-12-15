@@ -1,6 +1,5 @@
 package com.haeru.haeruworldback.domain.haeruplace.dto;
 
-import com.haeru.haeruworldback.domain.haeruplace.entity.Area;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
