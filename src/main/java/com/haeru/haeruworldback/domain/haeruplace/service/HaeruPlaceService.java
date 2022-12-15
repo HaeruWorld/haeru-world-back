@@ -48,7 +48,7 @@ public class HaeruPlaceService {
         }
 
         List<HaeruPlaces> haeruPlaces = new ArrayList<>();
-        List<HaeruPlaces> recommandPlaces = new ArrayList<>();
+        List<HaeruPlaces> recommendPlaces = new ArrayList<>();
         HaeruPlacesResponse haeruPlacesResponse = new HaeruPlacesResponse();
 
         if(resultList.size() > 0) {
@@ -57,19 +57,19 @@ public class HaeruPlaceService {
             }
             sortListByMarker(haeruPlaces);
 
-            recommandPlaces = null;
+            recommendPlaces = null;
 
         } else {
             for(HaeruPlace haeruPlace : findHaeruPlacesByArea) {
-                recommandPlaces.add(haeruPlace.toHaeruPlaces());
+                recommendPlaces.add(haeruPlace.toHaeruPlaces());
             }
-            sortListByMarker(recommandPlaces);
+            sortListByMarker(recommendPlaces);
 
             haeruPlaces = null;
         }
 
         haeruPlacesResponse.setHaeruPlaces(haeruPlaces);
-        haeruPlacesResponse.setRecommandPlaces(recommandPlaces);
+        haeruPlacesResponse.setRecommendPlaces(recommendPlaces);
 
         return haeruPlacesResponse;
     }
