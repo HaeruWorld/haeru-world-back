@@ -2,7 +2,6 @@ package com.haeru.haeruworldback.domain.haeruplace.entity;
 
 import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaces;
 import com.haeru.haeruworldback.domain.haeruplace.dto.MarkerPosition;
-import com.haeru.haeruworldback.domain.haeruplace.dto.RecommandPlaces;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,25 +72,4 @@ public class HaeruPlace {
                 .marineCollections(marineCollectionNameList)
                 .build();
     }
-
-    public RecommandPlaces toRecommandPlaces() {
-        MarkerPosition markerPosition = new MarkerPosition();
-        markerPosition.setX(this.markerPositionX);
-        markerPosition.setY(this.markerPositionY);
-        List<String> marineCollectionNameList = new ArrayList<>();
-        StringTokenizer st = new StringTokenizer(this.marineCollections, ",");
-        while(st.hasMoreTokens()) {
-            marineCollectionNameList.add(st.nextToken());
-        }
-
-        return RecommandPlaces.builder()
-                .id(this.haeruPlaceId)
-                .name(this.name)
-                .address(this.address)
-                .markerPosition(markerPosition)
-                .marineCollections(marineCollectionNameList)
-                .build();
-    }
-
-
 }

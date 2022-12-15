@@ -2,7 +2,6 @@ package com.haeru.haeruworldback.domain.haeruplace.service;
 
 import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaces;
 import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlacesResponse;
-import com.haeru.haeruworldback.domain.haeruplace.dto.RecommandPlaces;
 import com.haeru.haeruworldback.domain.haeruplace.entity.Area;
 import com.haeru.haeruworldback.domain.haeruplace.entity.HaeruPlace;
 import com.haeru.haeruworldback.domain.haeruplace.repository.HaeruPlaceRepository;
@@ -49,19 +48,22 @@ public class HaeruPlaceService {
         }
 
         List<HaeruPlaces> haeruPlaces = new ArrayList<>();
-        List<RecommandPlaces> recommandPlaces = new ArrayList<>();
+        List<HaeruPlaces> recommandPlaces = new ArrayList<>();
         HaeruPlacesResponse haeruPlacesResponse = new HaeruPlacesResponse();
 
         if(resultList.size() > 0) {
             for(HaeruPlace haeruPlace : resultList) {
                 haeruPlaces.add(haeruPlace.toHaeruPlaces());
             }
+            sortListByMarker(haeruPlaces);
+
             recommandPlaces = null;
 
         } else {
             for(HaeruPlace haeruPlace : findHaeruPlacesByArea) {
-                recommandPlaces.add(haeruPlace.toRecommandPlaces());
+                recommandPlaces.add(haeruPlace.toHaeruPlaces());
             }
+            sortListByMarker(recommandPlaces);
 
             haeruPlaces = null;
         }
@@ -70,5 +72,16 @@ public class HaeruPlaceService {
         haeruPlacesResponse.setRecommandPlaces(recommandPlaces);
 
         return haeruPlacesResponse;
+    }
+
+    public List<HaeruPlaces> sortListByMarker(List<HaeruPlaces> list) {
+        list.sort(new Comparator<HaeruPlaces>() {
+            @Override
+            public int compare(HaeruPlaces o1, HaeruPlaces o2) {
+                return o1.getMarkerPosition().getX().compareTo(o2.getMarkerPosition().getX());
+            }
+        });
+
+        return list;
     }
 }
