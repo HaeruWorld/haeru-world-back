@@ -133,7 +133,8 @@ public class HaeruPlaceDetailService {
             for(int i = 0; i < timeList.size(); i++) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 LocalDateTime dateTime = LocalDateTime.parse(timeList.get(i), formatter);
-                if(dateTime.isBefore(lawEndTime) && dateTime.isAfter(lawStartTime)) {
+                if((dateTime.minusHours(1).isAfter(lawStartTime) && dateTime.minusHours(1).isBefore(lawEndTime))
+                || (dateTime.plusHours(1).isAfter(lawStartTime) && dateTime.plusHours(1).isBefore(lawEndTime))) {
                     resultTime = dateTime;
                     break;
                 }

@@ -14,5 +14,5 @@ import java.util.List;
 public class HaeruPlacesResponse {
 
     List<HaeruPlaces> haeruPlaces;
-    List<HaeruPlaces> recommandPlaces;
+    List<HaeruPlaces> recommendPlaces;
 }
