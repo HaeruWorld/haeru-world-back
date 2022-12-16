@@ -36,10 +36,10 @@ public class HaeruPlaceService {
                 nameSet.add(st.nextToken());
             }
 
-            boolean flag = true;
+            boolean flag = false;
             for(String marineCollectionName : marineCollectionsList) {
-                if(!nameSet.contains(marineCollectionName)) {
-                    flag = false;
+                if(nameSet.contains(marineCollectionName)) {
+                    flag = true;
                     break;
                 }
             }
