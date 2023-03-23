@@ -1,5 +1,7 @@
 package com.haeru.haeruworldback.domain.haeruplace.dto;
 
+import com.haeru.haeruworldback.domain.Location;
+import com.haeru.haeruworldback.domain.MarineCollections;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +12,11 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class HaeruPlaceDetail {
+public class HaeruPlaceDetailDto {
 
     private String name;
     private String address;
-    private String area;
+    private String areaName;
     private Location location;
     private List<MarineCollections> marineCollections;
     private String startTime;
