@@ -1,9 +1,9 @@
 package com.haeru.haeruworldback.domain.haeruplace.service;
 
-import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaceDetail;
-import com.haeru.haeruworldback.domain.haeruplace.dto.Location;
-import com.haeru.haeruworldback.domain.haeruplace.dto.MarineCollections;
-import com.haeru.haeruworldback.domain.haeruplace.entity.Area;
+import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaceDetailDto;
+import com.haeru.haeruworldback.domain.Location;
+import com.haeru.haeruworldback.domain.haeruplace.dto.MarineCollectionDto;
+import com.haeru.haeruworldback.domain.Area;
 import com.haeru.haeruworldback.domain.haeruplace.entity.HaeruPlace;
 import com.haeru.haeruworldback.domain.haeruplace.entity.MarineCollection;
 import com.haeru.haeruworldback.domain.haeruplace.exception.HaeruPlaceNotFoundException;
@@ -25,8 +25,9 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,24 +38,21 @@ public class HaeruPlaceDetailService {
     private final MarineCollectionRepository marineCollectionRepository;
 
     // 해루질 장소 상세 조회
-    public HaeruPlaceDetail getHaeruPlacesDetail(Long haeruPlaceId) {
-        HaeruPlaceDetail haeruPlaceDetail = new HaeruPlaceDetail();
+    public HaeruPlaceDetailDto getHaeruPlacesDetail(Long haeruPlaceId) {
+        HaeruPlaceDetailDto haeruPlaceDetail = new HaeruPlaceDetailDto();
 
         HaeruPlace findHaeruPlace = haeruPlaceRepository.findById(haeruPlaceId).orElseThrow(HaeruPlaceNotFoundException::new);
 
         haeruPlaceDetail.setName(findHaeruPlace.getName());
         haeruPlaceDetail.setAddress(findHaeruPlace.getAddress());
 
-        String marineCollectionsName = findHaeruPlace.getMarineCollections();
-        StringTokenizer st = new StringTokenizer(marineCollectionsName,",");
+        String marineCollectionNames = findHaeruPlace.getMarineCollections();
 
-        List<String> marineCollectionNameList = new ArrayList<>();
-        while(st.hasMoreTokens()) {
-            marineCollectionNameList.add(st.nextToken());
-        }
+        List<String> selectMarineCollections = Arrays.stream(marineCollectionNames.split(","))
+                .collect(Collectors.toList());
 
-        List<MarineCollections> list = new ArrayList<>();
-        for(String name : marineCollectionNameList) {
+        List<MarineCollectionDto> list = new ArrayList<>();
+        for(String name : selectMarineCollections) {
             MarineCollection findMarineCollection = marineCollectionRepository.findByName(name);
             list.add(findMarineCollection.toDto());
         }
@@ -73,31 +71,17 @@ public class HaeruPlaceDetailService {
             haeruPlaceDetail.setEndTime(resultTime.get(1));
         }
 
-        String areaName = extractedArea(findHaeruPlace.getArea());
-        haeruPlaceDetail.setArea(areaName);
+        String areaName = findHaeruPlace.getArea().getAreaName();
+        haeruPlaceDetail.setAreaName(areaName);
 
         return haeruPlaceDetail;
-    }
-
-    // Area에서 String으로 지역추출
-    private String extractedArea(Area area) {
-        switch (area) {
-            case JEJU:
-                return "제주";
-            case AEWOL:
-                return "애월";
-            case SEOGWIPO:
-                return "서귀포";
-            default:
-                return "성산";
-        }
     }
 
 
     public List<String> getSeaTime(String area) {
 
         // 저조시간 관측 지역코드 추출
-        String areaCode = getAreaCode(area);
+        String areaCode = Area.valueOf(area).getAreaCode();;
 
         LocalDateTime localDateTime = LocalDateTime.now();
         String date = localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -165,19 +149,6 @@ public class HaeruPlaceDetailService {
         return resultTimeList;
     }
 
-    private String getAreaCode(String area) {
-        switch (area) {
-            case "JEJU":
-                return "DT_0004";
-            case "AEWOL":
-                return  "DT_0047";
-            case "SEONGSAN":
-                return  "DT_0022";
-            default:
-                return  "DT_0010";
-        }
-    }
-
     // 하루 저조 시간 구하기
     public List<String> getTphTime(String result) {
         List<String> list = new ArrayList<>();
@@ -185,13 +156,13 @@ public class HaeruPlaceDetailService {
             JSONParser parser = new JSONParser();
             JSONObject jsonObj = (JSONObject) parser.parse(result);
 
-            JSONObject resultData = (JSONObject) jsonObj.get("result");
-            JSONArray data = (JSONArray) resultData.get("data");
+            JSONObject objResult = (JSONObject) jsonObj.get("result");
+            JSONArray objData = (JSONArray) objResult.get("data");
 
-            for(int i = 0; i < data.size(); i++) {
-                JSONObject object = (JSONObject) data.get(i);
+            for (Object data : objData) {
+                JSONObject object = (JSONObject) data;
                 String hl_code = (String) object.get("hl_code");
-                if(hl_code.equals("저조")) {
+                if (hl_code.equals("저조")) {
                     String time = (String) object.get("tph_time");
                     list.add(time);
                 }
