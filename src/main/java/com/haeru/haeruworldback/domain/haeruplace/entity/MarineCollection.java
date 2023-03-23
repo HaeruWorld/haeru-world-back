@@ -1,6 +1,6 @@
 package com.haeru.haeruworldback.domain.haeruplace.entity;
 
-import com.haeru.haeruworldback.domain.haeruplace.dto.MarineCollections;
+import com.haeru.haeruworldback.domain.haeruplace.dto.MarineCollectionDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,8 +24,8 @@ public class MarineCollection {
     @Column(nullable = false)
     private String imageUrl;
 
-    public MarineCollections toDto() {
-        return MarineCollections.builder()
+    public MarineCollectionDto toDto() {
+        return MarineCollectionDto.builder()
                 .name(this.name)
                 .imageUrl(this.imageUrl)
                 .build();

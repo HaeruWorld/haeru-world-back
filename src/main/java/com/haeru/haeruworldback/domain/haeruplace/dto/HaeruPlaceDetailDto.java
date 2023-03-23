@@ -1,7 +1,6 @@
 package com.haeru.haeruworldback.domain.haeruplace.dto;
 
 import com.haeru.haeruworldback.domain.Location;
-import com.haeru.haeruworldback.domain.MarineCollections;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class HaeruPlaceDetailDto {
     private String address;
     private String areaName;
     private Location location;
-    private List<MarineCollections> marineCollections;
+    private List<MarineCollectionDto> marineCollections;
     private String startTime;
     private String endTime;
 

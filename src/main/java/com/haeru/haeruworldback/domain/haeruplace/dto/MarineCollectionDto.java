@@ -3,12 +3,11 @@ package com.haeru.haeruworldback.domain.haeruplace.dto;
 import lombok.*;
 
 @Getter
-@Setter
 @Builder
 @RequiredArgsConstructor
-@AllArgsConstructor
-public class MarineCollections {
+public class MarineCollectionDto {
 
-    private String name;
-    private String imageUrl;
+    private final String name;
+    private final String imageUrl;
+
 }
