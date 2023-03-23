@@ -1,7 +1,8 @@
 package com.haeru.haeruworldback.domain.haeruplace.entity;
 
-import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaces;
-import com.haeru.haeruworldback.domain.haeruplace.dto.MarkerPosition;
+import com.haeru.haeruworldback.domain.Area;
+import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaceDto;
+import com.haeru.haeruworldback.domain.MarkerPosition;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -54,22 +55,23 @@ public class HaeruPlace {
     @Column(nullable = false)
     private Double markerPositionY;
 
-    public HaeruPlaces toHaeruPlaces() {
-        MarkerPosition markerPosition = new MarkerPosition();
-        markerPosition.setX(this.markerPositionX);
-        markerPosition.setY(this.markerPositionY);
-        List<String> marineCollectionNameList = new ArrayList<>();
-        StringTokenizer st = new StringTokenizer(this.marineCollections, ",");
-        while(st.hasMoreTokens()) {
-            marineCollectionNameList.add(st.nextToken());
-        }
-
-        return HaeruPlaces.builder()
-                .id(this.haeruPlaceId)
-                .name(this.name)
-                .address(this.address)
-                .markerPosition(markerPosition)
-                .marineCollections(marineCollectionNameList)
+    public HaeruPlaceDto toHaeruPlaceDto() {
+        return HaeruPlaceDto.builder()
+                .id(haeruPlaceId)
+                .name(name)
+                .address(address)
+                .markerPosition(new MarkerPosition(markerPositionX, markerPositionY))
+                .marineCollections(Arrays.stream(marineCollections.split(","))
+                        .collect(Collectors.toList()))
                 .build();
+    }
+
+    public boolean isContainMarineCollection(List<String> selectMarineCollections) {
+        for (String name : selectMarineCollections) {
+            if (marineCollections.contains(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
