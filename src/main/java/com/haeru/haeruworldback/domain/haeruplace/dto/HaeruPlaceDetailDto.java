@@ -1,22 +1,19 @@
 package com.haeru.haeruworldback.domain.haeruplace.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.haeru.haeruworldback.domain.Location;
+import lombok.*;
+
 import java.util.List;
 
 @Getter
-@Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
-public class HaeruPlaceDetail {
+@Builder
+public class HaeruPlaceDetailDto {
 
     private String name;
     private String address;
     private String area;
     private Location location;
-    private List<MarineCollections> marineCollections;
+    private List<MarineCollectionDto> marineCollections;
     private String startTime;
     private String endTime;
 
