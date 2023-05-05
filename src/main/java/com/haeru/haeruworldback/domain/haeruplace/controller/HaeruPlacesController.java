@@ -12,7 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = { "https://baru-haeru.vercel.app/" }, maxAge = 6000)
+@CrossOrigin(origins = { "https://baru-haeru.vercel.app/*" }, maxAge = 6000)
 @RestController
 @Slf4j
 @RequestMapping("/haeruPlaces")
