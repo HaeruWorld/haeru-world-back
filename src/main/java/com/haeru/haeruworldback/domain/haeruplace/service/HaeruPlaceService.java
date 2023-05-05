@@ -1,15 +1,16 @@
 package com.haeru.haeruworldback.domain.haeruplace.service;
 
-import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaces;
-import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlacesResponse;
-import com.haeru.haeruworldback.domain.haeruplace.entity.Area;
-import com.haeru.haeruworldback.domain.haeruplace.entity.HaeruPlace;
+import com.haeru.haeruworldback.domain.HaeruPlaces;
+import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlaceDto;
+import com.haeru.haeruworldback.domain.haeruplace.dto.HaeruPlacesResponseDto;
+import com.haeru.haeruworldback.domain.Area;
 import com.haeru.haeruworldback.domain.haeruplace.repository.HaeruPlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,70 +19,26 @@ public class HaeruPlaceService {
 
     private final HaeruPlaceRepository haeruPlaceRepository;
 
-    public HaeruPlacesResponse getHaeruPlacesList(String marineCollections, String area) {
-        StringTokenizer st = new StringTokenizer(marineCollections, ",");
-        List<String> marineCollectionsList = new ArrayList<>();
-        while(st.hasMoreTokens()) {
-            marineCollectionsList.add(st.nextToken());
+    public HaeruPlacesResponseDto getHaeruPlaces(String marineCollectionNames, String areaName) {
+        HaeruPlaces selectAreaHaeruPlaces = new HaeruPlaces(haeruPlaceRepository.findByArea(Area.valueOf(areaName)));
+
+        HaeruPlaces findHaeruPlaces = getContainMarinePlace(marineCollectionNames, selectAreaHaeruPlaces);
+
+        if (findHaeruPlaces.isEmpty()) {
+            List<HaeruPlaceDto> responseRecommendPlaces = selectAreaHaeruPlaces.transferDto();
+            responseRecommendPlaces.sort(null);
+            return new HaeruPlacesResponseDto(null, responseRecommendPlaces);
         }
 
-        List<HaeruPlace> resultList = new ArrayList<>();
-        List<HaeruPlace> findHaeruPlacesByArea = haeruPlaceRepository.findByArea(Area.valueOf(area));
-        for(HaeruPlace haeruPlace : findHaeruPlacesByArea) {
-            String marineCollectionsString = haeruPlace.getMarineCollections();
-            st = new StringTokenizer(marineCollectionsString,",");
-
-            Set<String> nameSet = new HashSet<>();
-            while(st.hasMoreTokens()) {
-                nameSet.add(st.nextToken());
-            }
-
-            boolean flag = false;
-            for(String marineCollectionName : marineCollectionsList) {
-                if(nameSet.contains(marineCollectionName)) {
-                    flag = true;
-                    break;
-                }
-            }
-
-            if(flag) resultList.add(haeruPlace);
-        }
-
-        List<HaeruPlaces> haeruPlaces = new ArrayList<>();
-        List<HaeruPlaces> recommendPlaces = new ArrayList<>();
-        HaeruPlacesResponse haeruPlacesResponse = new HaeruPlacesResponse();
-
-        if(resultList.size() > 0) {
-            for(HaeruPlace haeruPlace : resultList) {
-                haeruPlaces.add(haeruPlace.toHaeruPlaces());
-            }
-            sortListByMarker(haeruPlaces);
-
-            recommendPlaces = null;
-
-        } else {
-            for(HaeruPlace haeruPlace : findHaeruPlacesByArea) {
-                recommendPlaces.add(haeruPlace.toHaeruPlaces());
-            }
-            sortListByMarker(recommendPlaces);
-
-            haeruPlaces = null;
-        }
-
-        haeruPlacesResponse.setHaeruPlaces(haeruPlaces);
-        haeruPlacesResponse.setRecommendPlaces(recommendPlaces);
-
-        return haeruPlacesResponse;
+        List<HaeruPlaceDto> responseHaeruPlaces = findHaeruPlaces.transferDto();
+        responseHaeruPlaces.sort(null);
+        return new HaeruPlacesResponseDto(responseHaeruPlaces, null);
     }
 
-    public List<HaeruPlaces> sortListByMarker(List<HaeruPlaces> list) {
-        list.sort(new Comparator<HaeruPlaces>() {
-            @Override
-            public int compare(HaeruPlaces o1, HaeruPlaces o2) {
-                return o1.getMarkerPosition().getX().compareTo(o2.getMarkerPosition().getX());
-            }
-        });
+    private HaeruPlaces getContainMarinePlace(String marineCollectionNames, HaeruPlaces selectAreaHaeruPlaces) {
+        List<String> selectMarineCollections = Arrays.stream(marineCollectionNames.split(","))
+                .collect(Collectors.toList());
 
-        return list;
+        return selectAreaHaeruPlaces.getContainMarineCollection(selectMarineCollections);
     }
 }
